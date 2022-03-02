@@ -1,0 +1,4 @@
+MAX_X = 400
+MIN_X = 0
+MAX_Y = 240
+MIN_Y = 0
