@@ -6,7 +6,9 @@ import "CoreLibs/timer"
 local gfx <const> = playdate.graphics
 
 SCOREBOARD = {
-   score = 0
+   score = 0,
+   won = false,
+   lost = false,
 }
 
 function SCOREBOARD.setup ()

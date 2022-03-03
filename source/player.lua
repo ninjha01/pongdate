@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "constants"
+import "utils"
 
 local gfx <const> = playdate.graphics
 
@@ -16,6 +17,7 @@ PLAYER = {
    sprite = nil,
    velocity = 5,
 }
+
 function PLAYER.setup()
    local playerImage = gfx.image.new("images/playerImage")
    assert( playerImage )
@@ -25,9 +27,11 @@ function PLAYER.setup()
    PLAYER.sprite:add()
    PLAYER.sprite:setCollideRect( 0, 0, PLAYER.sprite:getSize() )
 end
+
 function PLAYER.moveBy(x, y)
-   PLAYER.sprite:moveBy(x, y)
+   smoothMove(PLAYER.sprite, x, y)
 end
+
 function PLAYER.update()
    local currX, currY = PLAYER.sprite:getPosition()
    local width, height = PLAYER.sprite:getSize()

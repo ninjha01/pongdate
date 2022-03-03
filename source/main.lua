@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
+import "CoreLibs/crank"
 
 import "ball"
 import "player"
@@ -21,10 +22,18 @@ end
 myGameSetUp()
 
 function playdate.update()
-   print("Called")
-   PLAYER.update()
-   BALL.update()
-   ENEMY.update()
+   local ticks = math.abs(playdate.getCrankTicks(40))
+   if ticks > 1 then
+      for i=1, ticks do
+	 BALL.undo()
+      end
+      playdate.wait(0.5)
+   else
+      PLAYER.update()
+      BALL.update()
+      ENEMY.update()
+   end
+
 
    gfx.sprite.update()
    SCOREBOARD.update()
