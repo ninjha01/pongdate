@@ -3,16 +3,18 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "enemy"
+import "scoreboard"
+
 local gfx <const> = playdate.graphics
 -------------------------------------
 -- Ball
 -------------------------------------
-
-
 BALL = {
    sprite = nil,
-   xVelocity = 5,
-   yVelocity = 2
+   xVelocity = 3,
+   yVelocity = 1,
+   MAX_VELOCITY = 12
 }
 function BALL.setup()
    local ballImage = gfx.image.new("images/ballImage")
@@ -56,13 +58,19 @@ end
 function BALL.update()
    if BALL.isCollidingWith(PLAYER.sprite) then
       print("PLAYER COLLISION")
-      BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity * -1
+      local xSign = BALL.xVelocity > 1 and 1 or -1
+      -- local newXVelocity = -1 * xSign * (BALL.xVelocity < BALL.MAX_VELOCITY) and Ball.xVelocity or BALL.MAX_VELOCITY
+      local newXVelocity = -1 * xSign * (BALL.xVelocity + 1)
+      BALL.xVelocity, BALL.yVelocity = newXVelocity, BALL.yVelocity
+      BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
+      SCOREBOARD.score = SCOREBOARD.score + 1
+   elseif BALL.isCollidingWith(ENEMY.sprite) then
+      print("ENEMY COLLISION")
+      BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity
       BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
    else
       BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
    end
-
-   
 end
 
 function BALL.isCollidingWith(sprite)

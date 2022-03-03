@@ -3,8 +3,9 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
-local gfx <const> = playdate.graphics
+import "ball"
 
+local gfx <const> = playdate.graphics
 
 -------------------------------------
 -- Enemy
@@ -12,8 +13,9 @@ local gfx <const> = playdate.graphics
 
 ENEMY = {
    sprite = nil,
-   velocity = 5,
+   velocity = 2,
 }
+
 function ENEMY.setup()
    local playerImage = gfx.image.new("images/playerImage")
    assert( playerImage )
@@ -23,9 +25,17 @@ function ENEMY.setup()
    ENEMY.sprite:add()
    ENEMY.sprite:setCollideRect( 0, 0, ENEMY.sprite:getSize() )
 end
+
 function ENEMY.moveBy(x, y)
    ENEMY.sprite:moveBy(x, y)
 end
+
 function ENEMY.update()
-   ENEMY.moveBy(0, 2)
+   local ballX, ballY = BALL.sprite:getPosition()
+   local enemryX, enemyY = ENEMY.sprite:getPosition()
+   if enemyY > ballY then
+      ENEMY.moveBy( 0, -1 * ENEMY.velocity )
+   elseif enemyY < ballY then
+      ENEMY.moveBy( 0, ENEMY.velocity )
+   end
 end

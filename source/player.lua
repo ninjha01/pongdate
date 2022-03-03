@@ -47,7 +47,6 @@ function PLAYER.update()
    end
    if playdate.buttonIsPressed( playdate.kButtonDown ) then
       if canGoDown() then
-	 print("Moving down")
 	 PLAYER.moveBy( 0, PLAYER.velocity )
       end
    end

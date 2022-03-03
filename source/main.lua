@@ -6,6 +6,8 @@ import "CoreLibs/timer"
 import "ball"
 import "player"
 import "enemy"
+import "scoreboard"
+
 
 local gfx <const> = playdate.graphics
 
@@ -13,15 +15,18 @@ function myGameSetUp()
    PLAYER.setup()
    ENEMY.setup()
    BALL.setup()
+   SCOREBOARD.setup()
 end
 
 myGameSetUp()
 
 function playdate.update()
+   print("Called")
    PLAYER.update()
    BALL.update()
    ENEMY.update()
 
    gfx.sprite.update()
+   SCOREBOARD.update()
    playdate.timer.updateTimers()
 end
