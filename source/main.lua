@@ -8,6 +8,7 @@ import "ball"
 import "player"
 import "enemy"
 import "scoreboard"
+import "observers"
 
 
 local gfx <const> = playdate.graphics
@@ -34,8 +35,8 @@ function playdate.update()
       ENEMY.update()
    end
 
-
    gfx.sprite.update()
    SCOREBOARD.update()
    playdate.timer.updateTimers()
 end
+   

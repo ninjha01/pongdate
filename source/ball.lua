@@ -4,7 +4,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 import "enemy"
-import "scoreboard"
+import "observers"
 import "utils"
 
 local gfx <const> = playdate.graphics
@@ -17,8 +17,20 @@ BALL = {
    xVelocity = 3,
    yVelocity = 3,
    MAX_VELOCITY = 10,
-   history = {}   
+   history = {},
 }
+function BALL.handlePlayerCollision ()
+   print("PLAYER COLLISION")
+   BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity      
+   BALL.increaseBallVelocity()
+   BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
+end
+function BALL.handleEnemyCollision()
+   print("ENEMY COLLISION")
+   BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity
+   BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
+end
+
 function BALL.setup()
    local ballImage = gfx.image.new("images/ballImage")
    assert( ballImage )
@@ -27,6 +39,8 @@ function BALL.setup()
    BALL.sprite:moveTo( 200, 120 )
    BALL.sprite:add()
    BALL.sprite:setCollideRect( 0, 0, BALL.sprite:getSize() )
+   table.insert(COLLISIONS.subscribers[COLLISIONS.enums.BALL_PLAYER], 1, BALL.handlePlayerCollision)
+   table.insert(COLLISIONS.subscribers[COLLISIONS.enums.BALL_ENEMY], 1, BALL.handleEnemyCollision)
 end
 
 function BALL.undo()
@@ -49,7 +63,7 @@ end
 
 function BALL.moveBy(x, y)
    local currX, currY = BALL.sprite:getPosition()
-   xVelocity, yVelocity = BALL.xVelocity, BALL.yVelocity
+   local xVelocity, yVelocity = BALL.xVelocity, BALL.yVelocity
    BALL.pushToHistory(xVelocity, yVelocity, currX, currY)
 
    BALL.sprite:moveBy(x, y)
@@ -62,14 +76,14 @@ function BALL.moveBy(x, y)
       currX = MIN_X + 1
       BALL.xVelocity = -1 * xVelocity
       BALL.sprite:moveTo( currX, currY )
-   end   
+   end
    if currY >= MAX_Y then
-      currY = MAX_Y - 1      
+      currY = MAX_Y - 1
       BALL.yVelocity = -1 * yVelocity
       BALL.sprite:moveTo( currX, currY )
    end
    if currY <= MIN_Y then
-      currY = MIN_Y + 1 
+      currY = MIN_Y + 1
       BALL.yVelocity = -1 * yVelocity
       BALL.sprite:moveTo( currX, currY )
    end
@@ -94,15 +108,9 @@ end
 function BALL.update()
    local currX, currY = BALL.sprite:getPosition()
    if BALL.isCollidingWith(PLAYER.sprite) then
-      print("PLAYER COLLISION")
-      BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity      
-      BALL.increaseBallVelocity()
-      BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
-      SCOREBOARD.score = SCOREBOARD.score + 1
+      COLLISIONS.onCollision(COLLISIONS.enums.BALL_PLAYER)
    elseif BALL.isCollidingWith(ENEMY.sprite) then
-      print("ENEMY COLLISION")
-      BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity
-      BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
+      COLLISIONS.onCollision(COLLISIONS.enums.BALL_ENEMY)
    else
       if not (playdate.getCrankTicks(1000) > 1) then
 	 BALL.moveBy( BALL.xVelocity, BALL.yVelocity) -- move ball if player isn't undoing
