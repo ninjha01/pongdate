@@ -10,15 +10,18 @@ import "enemy"
 import "scoreboard"
 import "observers"
 import "commands"
+import "sounds"
 
 
 local gfx <const> = playdate.graphics
+
 
 function myGameSetUp()
    PLAYER.setup()
    ENEMY.setup()
    BALL.setup()
    SCOREBOARD.setup()
+   SOUNDS.setup()
 end
 
 myGameSetUp()

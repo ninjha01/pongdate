@@ -3,6 +3,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+import "observers"
+
 local gfx <const> = playdate.graphics
 
 SCOREBOARD = {
