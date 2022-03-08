@@ -16,6 +16,8 @@ local gfx <const> = playdate.graphics
 PLAYER = {
    sprite = nil,
    velocity = 5,
+   command_queue = {},
+   executed_queue = {}
 }
 
 function PLAYER.setup()
@@ -32,27 +34,51 @@ function PLAYER.moveBy(x, y)
    smoothMove(PLAYER.sprite, x, y)
 end
 
-function PLAYER.update()
-   local currX, currY = PLAYER.sprite:getPosition()
-   local width, height = PLAYER.sprite:getSize()
-   local spriteTop, spriteBottom = currY - (height / 2), currY + (height / 2)
-   
+function PLAYER.moveUp()
+   local _, height = PLAYER.sprite:getSize()
+   local _, currY = PLAYER.sprite:getPosition()   
+   local spriteTop = currY - (height / 2)
    local function canGoUp()
       return spriteTop >= MIN_Y + 5
    end
-   local function canGoDown()
-      return spriteBottom <= MAX_Y - 5
-   end
-
-   if playdate.buttonIsPressed( playdate.kButtonUp ) then
-      if canGoUp() then
-	 PLAYER.moveBy( 0, -1 * PLAYER.velocity )
-      end
-   end
-   if playdate.buttonIsPressed( playdate.kButtonDown ) then
-      if canGoDown() then
-	 PLAYER.moveBy( 0, PLAYER.velocity )
-      end
+   if canGoUp() then
+      PLAYER.moveBy( 0, -1 * PLAYER.velocity )
    end
 end
 
+function PLAYER.undoMoveUp()
+   PLAYER.moveBy( 0, 1 * PLAYER.velocity )
+end
+
+function PLAYER.moveDown()
+   local _, height = PLAYER.sprite:getSize()
+   local _, currY = PLAYER.sprite:getPosition()   
+   local spriteBottom = currY + (height / 2)
+   local function canGoDown()
+      return spriteBottom <= MAX_Y - 5
+   end
+   if canGoDown() then
+      PLAYER.moveBy( 0, 1 * PLAYER.velocity )
+   end
+end
+
+
+function PLAYER.undoMoveDown()
+   PLAYER.moveBy( 0, -1 * PLAYER.velocity )
+end
+
+
+function PLAYER.update()
+   local nextCommand = table.remove(PLAYER.command_queue, #PLAYER.command_queue) -- get next command
+   if not (nextCommand == nil) then
+      nextCommand.execute(PLAYER)
+      table.insert(PLAYER.executed_queue, 1, nextCommand)
+   end
+end
+
+function PLAYER.undo()
+   local nextCommand = table.remove(PLAYER.executed_queue, 1) -- get next exectued
+   if not (nextCommand == nil) then
+      nextCommand.undo(PLAYER)
+   end
+end

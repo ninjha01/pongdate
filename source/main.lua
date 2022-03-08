@@ -9,6 +9,7 @@ import "player"
 import "enemy"
 import "scoreboard"
 import "observers"
+import "commands"
 
 
 local gfx <const> = playdate.graphics
@@ -25,14 +26,24 @@ myGameSetUp()
 function playdate.update()
    local ticks = math.abs(playdate.getCrankTicks(40))
    if ticks > 1 then
-      for i=1, ticks do
+      for _ = 1, ticks do
 	 BALL.undo()
+	 PLAYER.undo()
+	 ENEMY.undo()
       end
       playdate.wait(0.5)
    else
+      ENEMY.ai()
       PLAYER.update()
       BALL.update()
       ENEMY.update()
+   end
+
+   if playdate.buttonIsPressed( playdate.kButtonUp ) then
+      table.insert(PLAYER.command_queue, 1, MOVE_UP)
+   end
+   if playdate.buttonIsPressed( playdate.kButtonDown ) then
+      table.insert(PLAYER.command_queue, 1, MOVE_DOWN)
    end
 
    gfx.sprite.update()
