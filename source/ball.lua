@@ -16,13 +16,15 @@ BALL = {
    sprite = nil,
    xVelocity = 3,
    yVelocity = 3,
-   MAX_VELOCITY = 10,
+   MAX_VELOCITY = 100,
    history = {},
 }
 function BALL.handlePlayerCollision ()
    print("PLAYER COLLISION")
-   BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity      
-   BALL.increaseBallVelocity()
+   print("OLD SPEED", BALL.xVelocity, BALL.yVelocity)
+   BALL.xVelocity, BALL.yVelocity = BALL.xVelocity * -1 , BALL.yVelocity -- bounce by negating x value
+   BALL.increaseBallVelocity(1, 1)
+   print("NEW SPEED", BALL.xVelocity, BALL.yVelocity)
    BALL.moveBy( BALL.xVelocity, BALL.yVelocity)
 end
 function BALL.handleEnemyCollision()
@@ -91,16 +93,16 @@ function BALL.moveBy(x, y)
    assert(currY >= MIN_Y and currY <= MAX_Y)
 end
 
-function BALL.increaseBallVelocity()
+function BALL.increaseBallVelocity(xIncrement, yIncrement)
    local xSign = BALL.xVelocity > 1 and 1 or -1
    local ySign = BALL.yVelocity > 1 and 1 or -1
-   local newXVelocity = xSign * (math.abs(BALL.xVelocity) + 1)
-   local newYVelocity = ySign * (math.abs((BALL.yVelocity) + 1))
+   local newXVelocity = xSign * (math.abs(BALL.xVelocity) + xIncrement)
+   local newYVelocity = ySign * (math.abs((BALL.yVelocity) + yIncrement))
    if math.abs(newXVelocity) > BALL.MAX_VELOCITY then
-      newXVelocity = BALL.MAX_VELOCITY
+      newXVelocity = xSign * BALL.MAX_VELOCITY
    end
    if math.abs(newYVelocity) > BALL.MAX_VELOCITY then
-      newYVelocity = BALL.MAX_VELOCITY
+      newYVelocity = ySign * BALL.MAX_VELOCITY
    end
    BALL.xVelocity, BALL.yVelocity = newXVelocity, newYVelocity
 end

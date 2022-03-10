@@ -9,11 +9,13 @@ local gfx <const> = playdate.graphics
 
 SCOREBOARD = {
    score = 0,
+   score_text = "*SCORE:* 0",
    won = false,
    lost = false,
 }
 function SCOREBOARD.handlePlayerCollision ()
    SCOREBOARD.score = SCOREBOARD.score + 1
+   SCOREBOARD.score_text = "*SCORE:* " .. SCOREBOARD.score
 end
 
 function SCOREBOARD.setup ()
@@ -21,5 +23,6 @@ function SCOREBOARD.setup ()
 end
 
 function SCOREBOARD.update ()
-   gfx.drawTextAligned("*SCORE:* " .. SCOREBOARD.score, 200, 120, kTextAlignment.center)
+   gfx.drawTextAligned(SCOREBOARD.score_text, 200, 120, kTextAlignment.center)
+   
 end
